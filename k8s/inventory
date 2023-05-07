@@ -1,0 +1,2 @@
+[bastion]
+host1	ansible_host=x.x.x.x	ansible_connection=ssh	ansible_user=<host_user>	ansible_ssh_private_key_file=<path_to_ssh_private_key>

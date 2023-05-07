@@ -1,0 +1,5 @@
+---
+- hosts: bastion
+  roles:
+    - containerd
+    - kube_tools

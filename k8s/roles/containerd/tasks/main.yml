@@ -1,0 +1,106 @@
+---
+
+- name: Forwarding IPv4 and letting iptables see bridged traffic
+  become: true
+  block:
+    - name: Adding overlay, br_netfilter modules
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          overlay
+          br_netfilter
+    
+    - name: Enabling overlay module
+      modprobe:
+        name: overlay
+        state: present
+    
+    - name: Enabling br_netfilter module
+      modprobe:
+        name: br_netfilter
+        state: present
+    
+    - name: Copying k8s.conf to sysctl.d dir 
+      copy:
+        src: "{{ role_path }}/files/containerruntime/containerd/k8s.conf"
+        dest: /etc/sysctl.d/k8s.conf
+    
+    - name: Applying sysctl params
+      sysctl:
+        name: "{{ item }}"
+        value: 1
+        reload: true
+        state: present
+      loop: "{{ sysctl }}"
+
+- name: Installing deps for containerd
+  become: true
+  apt:
+    update_cache: yes
+    pkg:
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+
+- name: Adding docker gpg key
+  become: true
+  block:
+    - name: Creating keyrings dir
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Downloading docker gpg key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+
+    - name: Adding Docker's repository to APT sources list
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+#- name: "Add Docker's official GPG key to apt"
+#  apt_key:
+#    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+#    url: https://download.docker.com/linux/ubuntu/gpg
+#    # Key destination path
+#    keyring: /etc/apt/keyrings/docker.gpg
+#    state: present
+
+#- name: Downloading docker gpg key
+#  block:
+#    - name: Download Docker gpg key
+#      ansible.builtin.get_url:
+#        url: https://download.docker.com/linux/ubuntu/gpg
+#        dest: /etc/apt/keyrings/docker.asc
+#
+#    - name: De-Armor Docker GPG key
+#      shell:  gpg --dearmor < /etc/apt/keyrings/docker.asc > sudo /etc/apt/keyrings/docker.gpg
+#
+#    - name: Add Docker's repository to APT sources list
+#      apt_repository:
+#        repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu focal stable"
+#        state: present
+
+- name: Installing containerd
+  become: true
+  block:
+    - name: Installing containerd
+      apt:
+        update_cache: yes
+        pkg:
+        - containerd.io
+    
+    - name: Enabling Systemd cgroup driver for containerd
+      copy:
+        src: "{{ role_path }}/files/containerruntime/containerd/config.toml"
+        dest: /etc/containerd/config.toml
+
+    - name: Restarting containerd
+      systemd:
+        daemon_reload: true
+        state: restarted
+        name: containerd
