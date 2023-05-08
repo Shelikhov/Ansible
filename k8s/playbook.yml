@@ -1,5 +1,6 @@
 ---
-- hosts: bastion
+- hosts: master_nodes
+  become: true
   roles:
     - containerd
     - kube_tools

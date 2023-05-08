@@ -1,0 +1,24 @@
+---    
+
+- name: Installing kubelet, kubeadm, kubectl
+  apt:
+    update_cache: yes
+    pkg:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Fixing kubeadm version
+  dpkg_selections:
+    name: kubelet
+    selection: hold
+
+- name: Fixing kubeadm version
+  dpkg_selections:
+    name: kubeadm
+    selection: hold
+
+- name: Fixing kubectl version
+  dpkg_selections:
+    name: kubectl
+    selection: hold

@@ -1,0 +1,18 @@
+---
+
+- name: Installing containerd
+  apt:
+    update_cache: yes
+    pkg:
+    - containerd.io
+
+- name: Enabling Systemd cgroup driver for containerd
+  copy:
+    src: "{{ role_path }}/files/containerruntime/containerd/config.toml"
+    dest: /etc/containerd/config.toml
+
+- name: Restarting containerd
+  systemd:
+    daemon_reload: true
+    state: restarted
+    name: containerd
