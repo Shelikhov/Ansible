@@ -1,8 +1,9 @@
 [master_nodes]
-host1   ansible_host=<master_node_IP>
+host1   ansible_host=<master_host_IP>
+host2   ansible_host=<master_host_IP>
 
 [master_nodes:vars]
-ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand="ssh -A -i <ssh_private_key_on_bastion_host> -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p -q <bastion_user>@<bastion_host_IP> -p <bastion_port>"'
-ansible_ssh_user = <master_node_user>
-ansible_ssh_port = <master_node_port>
-ansible_ssh_private_key_file = <ssh_private_key_access_bastion_host>
+ansible_ssh_common_args='-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ProxyCommand="ssh -A -i <ssh_private_key_path_on_bastion_host> -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p -q <bastion_user>@<bastion_host> -p 22"'
+ansible_ssh_user = ubuntu 
+ansible_ssh_port = 22
+ansible_ssh_private_key_file = <ssh_private_key_path_on_ansible_host>

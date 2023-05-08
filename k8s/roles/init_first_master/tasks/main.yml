@@ -1,0 +1,9 @@
+---
+
+- name: Initializing first k8s instance
+  include_tasks:
+    file: kubeadm_init.yml
+
+- name: Installing CNI plugin
+  include_tasks:
+    file: calico.yml

@@ -1,0 +1,37 @@
+---
+
+- name: Installing pip3 package to install pre-requisites for k8s module
+  apt:
+    name: python3-pip
+    state: present 
+
+- name: Installing pre-requisites for k8s module
+  pip:
+    name:
+      - openshift
+      - pyyaml
+      - kubernetes 
+
+- name: Downloading Tigera operator manifest
+  become_user: ubuntu
+  get_url:
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
+    dest: $HOME/tigera-operator.yaml
+
+- name: Installing Tigera operator for Calico
+  become_user: ubuntu
+  k8s:
+    state: present
+    src: $HOME/tigera-operator.yaml
+
+- name: Copying calico yaml to k8s node
+  become_user: ubuntu
+  copy:
+    src: "{{ role_path }}/files/calico.yaml"
+    dest: $HOME/calico.yaml
+
+- name: Installing Calico manifest
+  become_user: ubuntu
+  k8s:
+    state: present
+    src: $HOME/calico.yaml

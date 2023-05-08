@@ -1,0 +1,26 @@
+---
+
+- name: Checking that kubeadm initialized
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: k8s_conf
+
+- name: kubeadm init ...
+  shell: |
+    kubeadm init --cri-socket {{ container_runtime_socket }} --pod-network-cidr={{ pod_network_cidr }} --control-plane-endpoint={{ control_plane_endpoint }}
+  when: not k8s_conf.stat.exists
+
+- name: Creating kube config dir
+  become_user: ubuntu
+  file:
+    path: $HOME/.kube
+    state: directory
+
+- name: Copying kube config to created dir
+  copy:
+    src: /etc/kubernetes/admin.conf
+    remote_src: true
+    dest: /home/ubuntu/.kube/config
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755

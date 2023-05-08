@@ -8,3 +8,6 @@ Hosts:
 Roles:
 - containerd - to prepare net modules (overlay, br_netfilter) and install containerd as ContainerRuntime;
 - kube_tools - to install kubelet, kubeadm, kubectl.
+
+Prerequesites:
+To replace variables in inventory and vars files.

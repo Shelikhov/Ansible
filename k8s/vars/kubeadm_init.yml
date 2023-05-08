@@ -1,0 +1,5 @@
+---
+
+container_runtime_socket: unix:///var/run/containerd/containerd.sock
+pod_network_cidr: 10.244.0.0/16
+control_plane_endpoint: <LoadBalancer_FQDN>
