@@ -1,6 +1,6 @@
 ---
 
-- name: Initializing first k8s instance
+- name: Initializing primary master node
   include_tasks:
     file: kubeadm_init.yml
 

@@ -1,0 +1,10 @@
+---
+
+- name: Checking that master node alredy joined to the primary node
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: k8s_conf
+
+- name: Joining master nodes to the primary master node
+  shell: "{{ hostvars[groups['master_nodes'][0]].master_join_command }}"
+  when: not k8s_conf.stat.exists

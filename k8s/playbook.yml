@@ -1,5 +1,5 @@
 ---
-- hosts: master_nodes
+- hosts: all
   become: true
   roles:
     - containerd
@@ -10,4 +10,10 @@
   vars_files:
     - vars/kubeadm_init.yml
   roles:
-    - { role: init_first_master, when: "groups['master_nodes'][0] == inventory_hostname"}
+    - { role: init_primary_master, when: "groups['master_nodes'][0] == inventory_hostname"}
+    - { role: join_master_nodes, when: "groups['master_nodes'][0] != inventory_hostname"}
+
+- hosts: worker_nodes
+  become: true
+  roles:
+    - join_worker_nodes

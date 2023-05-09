@@ -7,7 +7,10 @@ Hosts:
  
 Roles:
 - containerd - to prepare net modules (overlay, br_netfilter) and install containerd as ContainerRuntime;
-- kube_tools - to install kubelet, kubeadm, kubectl.
+- kube_tools - to install kubelet, kubeadm, kubectl;
+- init_primary_master - to initialize primary master node with kubeadm;
+- join_master_nodes - to join rest master nodes to the primary master node;
+- join_worker_nodes - to join worker nodes to the primary master node.
 
 Prerequesites:
-To replace variables in inventory and vars files.
+- to replace variables in inventory and vars files.

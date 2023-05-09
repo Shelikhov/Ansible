@@ -24,7 +24,7 @@
     state: present
     src: $HOME/tigera-operator.yaml
 
-- name: Copying calico yaml to k8s node
+- name: Copying calico yaml to primary master node
   become_user: ubuntu
   copy:
     src: "{{ role_path }}/files/calico.yaml"
